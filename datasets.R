@@ -4,7 +4,9 @@ productList <- function(dataset) {
   c("All",sort(unique(unlist(strsplit(dataset$Products,",")))))
 }
 
-datasetStatic <- read.csv("data/testData.csv",stringsAsFactors = FALSE)
+datasetStatic <- read.csv("data/OpenFarmDataset.csv",stringsAsFactors = FALSE,encoding="utf-8")
+
+datasetStatic$ProductsTruncated <- paste0(strtrim(datasetStatic$Products,50),"...")
 
 values <- reactiveValues(
   dataset = list(datasetStatic),
@@ -12,5 +14,5 @@ values <- reactiveValues(
   
 
 saveDataSet <- function() {
-  write.csv(values$dataset[[1]],"data/testData.csv",row.names=FALSE)
+  write.csv(values$dataset[[1]],"data/OpenFarmDataset.csv",row.names=FALSE)
 }
