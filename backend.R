@@ -7,9 +7,9 @@ server <- shinyServer(function(input, output,session) {
   
   filteredDataset <- reactive({
     if(input$productSelection == "All") {
-      return(values$dataset)
+      return(values$dataset[[1]])
     } else {
-      return(values$dataset[grepl(input$productSelection,values$dataset$Products),])
+      return(values$dataset[[1]][grepl(input$productSelection,values$dataset[[1]]$Products),])
     }
   })
   
@@ -129,19 +129,19 @@ server <- shinyServer(function(input, output,session) {
       
       editIndex <- as.numeric(rownames(filteredDataset()[editIndex,]))
       
-      values$dataset[editIndex,"Name"] <- input$editName
-     
-      
-      values$dataset[editIndex,"Products"] <- input$editProduct
+      values$dataset[[1]][editIndex,"Name"] <- input$editName
       
       
-      values$dataset[editIndex,"Street"] <- input$editStreet
+      values$dataset[[1]][editIndex,"Products"] <- input$editProduct
       
       
-      values$dataset[editIndex,"City"] <- input$editCity
+      values$dataset[[1]][editIndex,"Street"] <- input$editStreet
       
-      values$products <- productList(values$dataset)
-      updateSelectInput(session, "productSelection", choices = values$products)
+      
+      values$dataset[[1]][editIndex,"City"] <- input$editCity
+      
+      values$products[[1]] <- productList(values$dataset[[1]])
+      updateSelectInput(session, "productSelection", choices = values$products[[1]])
     }
     
     removeModal()
@@ -153,4 +153,71 @@ server <- shinyServer(function(input, output,session) {
   observeEvent(input$Cancel, {
     removeModal()
   })
+  
+  ##########################
+  ## Add
+  ##########################
+  
+  observeEvent(input$Add, {
+    
+    showModal(modalDialog(
+      title = "Edit View",
+      fluidPage(
+        fluidRow(
+          column(6,
+                 textInput('addName',
+                           label='Name')
+          ),
+          column(6,
+                 textInput('addProduct',
+                           label='Products')
+          )
+        ),
+        fluidRow(
+          column(6,
+                 textInput('addStreet',
+                           label='Address')
+          ),
+          column(6,
+                 textInput('addCity',
+                           label='City')
+          )
+        )
+      ),
+      footer = list(actionButton("SaveAdd","Save"),
+                    actionButton("CancelAdd","Cancel")),
+      easyClose = TRUE
+    )
+    )
+  })
+  
+  # Save Add
+  
+  observeEvent(input$SaveAdd, {
+    
+    newRow <- data.frame(
+      Name = input$addName,
+      Products = input$addProduct,
+      Street = input$addStreet,
+      City = input$addCity,
+      Longitude = 6.332217,
+      Latitude = 46.532801)
+    
+    
+    values$dataset[[1]] <- rbind(values$dataset[[1]],
+                            newRow)
+    
+    values$products[[1]] <- productList(values$dataset[[1]])
+    updateSelectInput(session, "productSelection", choices = values$products[[1]])
+    
+    removeModal()
+    
+    saveDataSet()
+  })
+  
+  # Cancel Add
+  observeEvent(input$CancelAdd, {
+    removeModal()
+  })
+  
 })

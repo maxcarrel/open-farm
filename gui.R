@@ -17,7 +17,8 @@ ui <- fluidPage(
     column(3, offset=6,
            div(style="display:inline-block",
                actionButton("Details","Details"),
-               actionButton("Edit","Edit")
+               actionButton("Edit","Edit"),
+               actionButton("Add","Add")
                )
            )
     ),

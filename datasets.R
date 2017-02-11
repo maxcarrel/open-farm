@@ -7,10 +7,10 @@ productList <- function(dataset) {
 datasetStatic <- read.csv("data/testData.csv",stringsAsFactors = FALSE)
 
 values <- reactiveValues(
-  dataset = datasetStatic,
-  products = productList(datasetStatic))
+  dataset = list(datasetStatic),
+  products = list(productList(datasetStatic)))
   
 
 saveDataSet <- function() {
-  write.csv(values$dataset,"data/testData.csv",row.names=FALSE)
+  write.csv(values$dataset[[1]],"data/testData.csv",row.names=FALSE)
 }
